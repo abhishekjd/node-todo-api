@@ -1,5 +1,6 @@
 var express = require('express');
 var bodyParser = require('body-parser');
+var {ObjectID} = require('mongodb');
 
 var {mongoose} = require('./db/mongoose.js');
 var {Todo} = require('./models/todos.js');
@@ -29,7 +30,20 @@ app.get('/todos', (req, res)=>{
     })
 })
 
-
+app.get('/todos/:id', (req, res)=>{
+    var id = req.params.id
+    if (!ObjectID.isValid(id)){
+        return res.status(404).send('Invalid Object ID')
+    }
+    Todo.findById(id).then((todos)=>{
+        if (!todos){
+            return res.status(404).send("Id not found")
+        }
+        res.send({todos},{status : 200});
+    }).catch((err)=>{
+        res.status(400).send(err);
+    })
+})
 
 app.listen(3000, ()=>{
    console.log('Server is running at port 3000');
