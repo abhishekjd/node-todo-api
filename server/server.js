@@ -39,11 +39,26 @@ app.get('/todos/:id', (req, res)=>{
         if (!todos){
             return res.status(404).send("Id not found")
         }
-        res.status(200).send({todos});
+        res.send({todos});
     }).catch((err)=>{
         res.status(400).send(err);
     })
 })
+
+app.delete('/todos/:id', (req, res)=>{
+    var id = req.params.id;
+    if (!ObjectID.isValid(id)){
+        return res.status(404).send('Invalid Object ID')
+    }
+    Todo.findByIdAndRemove(id).then((todo)=>{
+        if (!todo){
+            res.status(404).send("Todo not found")
+        }
+        res.send({todo});
+    }).catch((err)=>{
+        res.status(400).send(err);
+    })
+});
 
 app.listen(3000, ()=>{
    console.log('Server is running at port 3000');
